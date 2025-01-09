@@ -59,5 +59,9 @@ Suposem que tenim les taules `employees` i `departments`, amb la columna comuna 
 SELECT e.first_name, d.department_name
 FROM employees e JOIN departments d
 USING (department_id);
+<<<<<<< HEAD
 ```
 
+=======
+```
+>>>>>>> ba1405fb4314943c8e98ee35cd49a02a10c9c145
