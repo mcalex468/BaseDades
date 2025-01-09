@@ -32,3 +32,13 @@ e.manager_id es la clau foránea que apunta al cap del empleat e.
 m.employee_id es la clau primaria que identifica al cap.
 
 La segona condició AND e.job_id = m.job_id asegura que el empleat (e) y el cap (m) treballin al mateix job_id (mateix puesto o ofici).
+
+### Join amb Reflexiva (mateixa taula)
+
+```sql
+SELECT r.nombre AS "NomEmpleat", d.nombre AS "NomCap"
+FROM repventas r 
+LEFT JOIN repventas d ON r.director = d.num_empl
+```
+
+Agafem r.director que es el camp que volem (director) , seguidament igualem a la clau primaria de la taula, que en aquest cas es el num_empl es una clau unica per tots els camps de la taula inclós el camp director.
