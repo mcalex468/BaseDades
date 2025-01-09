@@ -59,9 +59,19 @@ Suposem que tenim les taules `employees` i `departments`, amb la columna comuna 
 SELECT e.first_name, d.department_name
 FROM employees e JOIN departments d
 USING (department_id);
-<<<<<<< HEAD
 ```
 
-=======
+### LEFT Join
+
+Volem juntar dos taules, pero al juntarles hem de utilitzar mes que JON per
+poder mostrar totes les dades demanades, si volem mostrar tots els empleats tinguin o no oficina , hem de utilitzar LEFT o RIGTH per agafar totes les dades de la taula.
+
+2. Mostra els noms de tots els venedors i si tenen una oficina assignada mostra la ciutat on es
+troba l'oficina.
+```sql
+/*2. Mostra els noms de tots els venedors i si tenen una oficina assignada mostra la ciutat on es
+troba l'oficina.*/
+SELECT r.nombre, o.ciudad AS "CiutatOficina"
+FROM repventas r
+LEFT JOIN  oficinas o ON r.oficina_rep = o.oficina;
 ```
->>>>>>> ba1405fb4314943c8e98ee35cd49a02a10c9c145
