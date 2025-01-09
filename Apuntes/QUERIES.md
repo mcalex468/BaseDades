@@ -63,11 +63,8 @@ USING (department_id);
 
 ### LEFT Join
 
-Volem juntar dos taules, pero al juntarles hem de utilitzar mes que JON per
-poder mostrar totes les dades demanades, si volem mostrar tots els empleats tinguin o no oficina , hem de utilitzar LEFT o RIGTH per agafar totes les dades de la taula.
-
-2. Mostra els noms de tots els venedors i si tenen una oficina assignada mostra la ciutat on es
-troba l'oficina.
+Si volem mostrar tots els empleats inclosos els nulls al igualar
+les taules, hem de utilitzar LEFT o RIGTH per agafar totes les dades de la taula desitjada.
 ```sql
 /*2. Mostra els noms de tots els venedors i si tenen una oficina assignada mostra la ciutat on es
 troba l'oficina.*/
