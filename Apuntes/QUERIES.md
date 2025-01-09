@@ -34,7 +34,7 @@ El **JOIN** és una operació utilitzada per combinar files de dues o més taule
 
 ### Natural Join
 
-Suposem que tenim les taules `employees` i `departments`, amb la columna comuna `department_id` (que és present en ambdues taules). Podem utilitzar **NATURAL JOIN** per combinar les dues taules:
+Suposem que tenim les taules `employees` i `departments`, amb la columna comuna `department_id` (que és present en ambdues taules). Podem utilitzar **NATURAL JOIN** per combinar les dues taules, sense utilitzar ON o USING:
 
 ```sql
 SELECT e.first_name, d.department_name
