@@ -26,6 +26,18 @@ VALUES (1, 'Juan Pérez', 'Gerente', 50000);
 
 ---
 
+#### Ejemplo de un `INSERT` que genera un error
+Si intentas insertar un valor duplicado en una columna con restricción `UNIQUE`, obtendrás un error.
+
+**Ejemplo:**
+```sql
+INSERT INTO empleados (id, nombre, puesto, salario)
+VALUES (1, 'Juan Pérez', 'Gerente', 50000);
+-- Error: la clave primaria o valor único ya existe.
+```
+
+---
+
 ### 2. **UPDATE**: Actualizar datos
 El comando `UPDATE` permite modificar registros existentes en una tabla.
 
@@ -81,6 +93,23 @@ WHERE condición;
 SELECT nombre, puesto
 FROM empleados
 WHERE salario > 40000;
+```
+
+---
+
+
+### Create Index
+Los índices no son técnicamente parte de DML, pero impactan directamente en el rendimiento de las operaciones.
+
+**Crear un índice en una columna usada frecuentemente en consultas:**
+```sql
+CREATE INDEX idx_empleados_puesto ON empleados (puesto);
+```
+
+**Consultar con el índice:**
+```sql
+SELECT * FROM empleados
+WHERE puesto = 'Developer';
 ```
 
 ---
