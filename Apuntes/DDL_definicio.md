@@ -40,40 +40,7 @@ ALTER TABLE empleados RENAME COLUMN nombre TO nombre_completo;
 ALTER TABLE empleados RENAME TO trabajadores;
 ```
 
-### 3. **DROP**
-Elimina objetos de la base de datos.
-
-- **Eliminar una columna**:
-
-```sql
-ALTER TABLE empleados DROP COLUMN edad;
-```
-
-- **Eliminar una tabla**:
-
-```sql
-DROP TABLE empleados;
-```
-
-### 4. **TRUNCATE**
-Elimina todos los registros de una tabla sin borrar su estructura.
-
-```sql
-TRUNCATE TABLE empleados;
-```
-
----
-
-## Casos Prácticos Avanzados
-
-### 1. **Renombrar Constraints**
-En PostgreSQL no es posible renombrar directamente un constraint. Es necesario eliminar el constraint existente y crearlo nuevamente.
-
-- **Eliminar un constraint existente**:
-
-```sql
-ALTER TABLE empleados DROP CONSTRAINT old_constraint_name;
-```
+#### 2.1 Alters Diferentes
 
 - **Crear un nuevo constraint con el nuevo nombre**:
 
@@ -81,24 +48,16 @@ ALTER TABLE empleados DROP CONSTRAINT old_constraint_name;
 ALTER TABLE empleados ADD CONSTRAINT new_constraint_name PRIMARY KEY (id);
 ```
 
-### 2. **Cambiar el Tipo o Tamaño de una Columna**
+- **Eliminar un constraint existente**:
+
+```sql
+ALTER TABLE empleados DROP CONSTRAINT old_constraint_name;
+```
 
 - **Modificar el tipo de datos**:
 
 ```sql
 ALTER TABLE empleados ALTER COLUMN salario TYPE DECIMAL(12, 2);
-```
-
-- **Cambiar una columna para que no acepte valores nulos**:
-
-```sql
-ALTER TABLE empleados ALTER COLUMN nombre SET NOT NULL;
-```
-
-- **Permitir valores nulos en una columna**:
-
-```sql
-ALTER TABLE empleados ALTER COLUMN nombre DROP NOT NULL;
 ```
 
 ### 3. **Renombrar Columnas y Tablas**
@@ -129,10 +88,29 @@ ALTER TABLE empleados ADD COLUMN fecha_ingreso DATE;
 ALTER TABLE empleados DROP COLUMN fecha_ingreso;
 ```
 
-### 5. **Eliminar Todos los Registros de una Tabla**
+
+
+### 3. **DROP**
+Elimina objetos de la base de datos.
+
+- **Eliminar una columna**:
+
+```sql
+ALTER TABLE empleados DROP COLUMN edad;
+```
+
+- **Eliminar una tabla**:
+
+```sql
+DROP TABLE empleados;
+```
+
+### 4. **TRUNCATE**
+Elimina todos los registros de una tabla sin borrar su estructura.
 
 ```sql
 TRUNCATE TABLE empleados;
 ```
 
 ---
+
