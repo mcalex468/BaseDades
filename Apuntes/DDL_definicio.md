@@ -1,86 +1,85 @@
+
 # DDL en PostgreSQL
 
-## Comandos Básicos de DDL
+## Comandes Bàsiques de DDL
 
 ### 1. **CREATE**
-Crea objetos en la base de datos, como tablas.
+Crea objectes a la base de dades, com taules.
 
 ```sql
-CREATE TABLE empleados (
+CREATE TABLE empleats (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100),
-    salario DECIMAL(10, 2)
+    nom VARCHAR(100),
+    salari DECIMAL(10, 2)
 );
 ```
 
-Comentarios de tabla y de columnas.
+Comentaris de taula i de columnes.
+
 ```sql
-COMMENT ON TABLE empleados IS 'Comentario de la Tabla Empleados'
-COMMENT ON COLUMN empleados.nombre IS 'Nombre completo del empleado';
-COMMENT ON COLUMN empleados.fecha_nacimiento IS 'Fecha de nacimiento del empleado';
-COMMENT ON COLUMN empleados.salario IS 'Salario base mensual del empleado';
+COMMENT ON TABLE empleats IS 'Comentari de la Taula Empleats'
+COMMENT ON COLUMN empleats.nom IS 'Nom complet de l'empleat';
+COMMENT ON COLUMN empleats.data_naixement IS 'Data de naixement de l'empleat';
+COMMENT ON COLUMN empleats.salari IS 'Salari base mensual de l'empleat';
 ```
 
-### 2. **MODIFICAR o AÑADIR**
-Modifica la estructura de los objetos existentes.
+### 2. **MODIFICAR o AFEGIR**
+Modifica l'estructura dels objectes existents.
 
-- **Agregar una columna**:
+- **Afegir una columna**:
 
 ```sql
-ALTER TABLE empleados ADD COLUMN edad INT;
+ALTER TABLE empleats ADD COLUMN edat INT;
 ```
 
-- **Agregar un nuevo constraint**:
+- **Afegir una nova restricció**:
 
 ```sql
-ALTER TABLE empleados ADD CONSTRAINT new_constraint_name PRIMARY KEY (id);
+ALTER TABLE empleats ADD CONSTRAINT nova_restriccio PRIMARY KEY (id);
 ```
 
-- **Modificar el tipo de datos de una columna**:
+- **Modificar el tipus de dades d'una columna**:
 
 ```sql
-ALTER TABLE empleados ALTER COLUMN salario TYPE DECIMAL(12, 2);
+ALTER TABLE empleats ALTER COLUMN salari TYPE DECIMAL(12, 2);
 ```
 
-- **Renombrar una columna**:
+- **Canviar el nom d'una columna**:
 
 ```sql
-ALTER TABLE empleados RENAME COLUMN nombre TO nombre_completo;
+ALTER TABLE empleats RENAME COLUMN nom TO nom_complet;
 ```
 
-- **Renombrar una tabla**:
+- **Canviar el nom d'una taula**:
 
 ```sql
-ALTER TABLE empleados RENAME TO trabajadores;
+ALTER TABLE empleats RENAME TO treballadors;
 ```
 
 ### 3. **DROP**
-Elimina objetos de la base de datos.
+Elimina objectes de la base de dades.
 
 - **Eliminar una columna**:
 
 ```sql
-ALTER TABLE empleados DROP COLUMN edad;
+ALTER TABLE empleats DROP COLUMN edat;
 ```
 
-- **Eliminar una tabla**:
+- **Eliminar una taula**:
 
 ```sql
-DROP TABLE empleados;
+DROP TABLE empleats;
 ```
 
-- **Eliminar un constraint existente**:
+- **Eliminar una restricció existent**:
 
 ```sql
-ALTER TABLE empleados DROP CONSTRAINT old_constraint_name;
+ALTER TABLE empleats DROP CONSTRAINT antiga_restriccio;
 ```
 
 ### 4. **TRUNCATE**
-Elimina todos los registros de una tabla sin borrar su estructura.
+Elimina tots els registres d'una taula sense eliminar la seva estructura.
 
 ```sql
-TRUNCATE TABLE empleados;
+TRUNCATE TABLE empleats;
 ```
-
----
-
