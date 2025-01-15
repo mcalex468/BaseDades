@@ -21,13 +21,19 @@ COMMENT ON COLUMN empleados.fecha_nacimiento IS 'Fecha de nacimiento del emplead
 COMMENT ON COLUMN empleados.salario IS 'Salario base mensual del empleado';
 ```
 
-### 2. **ALTER**
+### 2. **MODIFICAR o AÑADIR**
 Modifica la estructura de los objetos existentes.
 
 - **Agregar una columna**:
 
 ```sql
 ALTER TABLE empleados ADD COLUMN edad INT;
+```
+
+- **Agregar un nuevo constraint**:
+
+```sql
+ALTER TABLE empleados ADD CONSTRAINT new_constraint_name PRIMARY KEY (id);
 ```
 
 - **Modificar el tipo de datos de una columna**:
@@ -48,56 +54,6 @@ ALTER TABLE empleados RENAME COLUMN nombre TO nombre_completo;
 ALTER TABLE empleados RENAME TO trabajadores;
 ```
 
-#### 2.1 Alters Diferentes
-
-- **Crear un nuevo constraint con el nuevo nombre**:
-
-```sql
-ALTER TABLE empleados ADD CONSTRAINT new_constraint_name PRIMARY KEY (id);
-```
-
-- **Eliminar un constraint existente**:
-
-```sql
-ALTER TABLE empleados DROP CONSTRAINT old_constraint_name;
-```
-
-- **Modificar el tipo de datos**:
-
-```sql
-ALTER TABLE empleados ALTER COLUMN salario TYPE DECIMAL(12, 2);
-```
-
-### 3. **Renombrar Columnas y Tablas**
-
-- **Renombrar una columna**:
-
-```sql
-ALTER TABLE empleados RENAME COLUMN nombre TO nombre_completo;
-```
-
-- **Renombrar una tabla**:
-
-```sql
-ALTER TABLE empleados RENAME TO trabajadores;
-```
-
-### 4. **Agregar y Eliminar Columnas**
-
-- **Agregar una columna nueva**:
-
-```sql
-ALTER TABLE empleados ADD COLUMN fecha_ingreso DATE;
-```
-
-- **Eliminar una columna**:
-
-```sql
-ALTER TABLE empleados DROP COLUMN fecha_ingreso;
-```
-
-
-
 ### 3. **DROP**
 Elimina objetos de la base de datos.
 
@@ -111,6 +67,12 @@ ALTER TABLE empleados DROP COLUMN edad;
 
 ```sql
 DROP TABLE empleados;
+```
+
+- **Eliminar un constraint existente**:
+
+```sql
+ALTER TABLE empleados DROP CONSTRAINT old_constraint_name;
 ```
 
 ### 4. **TRUNCATE**
