@@ -1,6 +1,6 @@
 ## Coses específiques en SQL
 
-### Crear una Secuencia + Insert
+### Crear una Sequencia + Insert
 
 El sequent script crea una sequencia nombrada `seq_estudiant_id` que comença desde el número 1, incrementantse en 1 per cada nou valor.
 
