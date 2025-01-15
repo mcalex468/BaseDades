@@ -20,8 +20,7 @@ VALUES (nextval('seq_estudiant_id'), 'María González', 23, 8.7);
 ### Multitaula amb Reflexiva (mateixa taula)
 
 ```sql
--- 10. Mostra el cognom i el job_id dels empleats que tinguin el 
--- mateix ofici que el seu cap i mosarta el nom del cap
+-- 10. Mostra el cognom i el job_id dels empleats que tinguin el mateix ofici que el seu cap i mosarta el nom del cap
 SELECT e.last_name , e.job_id , m.first_name
 FROM employees e, employees m
 WHERE e.manager_id = m.employee_id

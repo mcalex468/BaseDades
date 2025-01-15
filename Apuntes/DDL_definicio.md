@@ -13,6 +13,14 @@ CREATE TABLE empleados (
 );
 ```
 
+Comentarios de tabla y de columnas.
+```sql
+COMMENT ON TABLE empleados IS 'Comentario de la Tabla Empleados'
+COMMENT ON COLUMN empleados.nombre IS 'Nombre completo del empleado';
+COMMENT ON COLUMN empleados.fecha_nacimiento IS 'Fecha de nacimiento del empleado';
+COMMENT ON COLUMN empleados.salario IS 'Salario base mensual del empleado';
+```
+
 ### 2. **ALTER**
 Modifica la estructura de los objetos existentes.
 
