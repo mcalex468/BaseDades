@@ -41,7 +41,7 @@ ALTER TABLE empleats ADD CONSTRAINT nova_restriccio PRIMARY KEY (id);
 - **Modificar el tipus de dades d'una columna**:
 
 ```sql
-ALTER TABLE empleats ALTER COLUMN salari TYPE DECIMAL(12, 2);
+ALTER TABLE empleats ALTER COLUMN salari SET DATA TYPE DECIMAL(12, 2);
 ```
 
 - **Canviar el nom d'una columna**:
