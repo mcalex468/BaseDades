@@ -148,7 +148,109 @@ WHERE e.manager_id = c.employee_id AND e.job_id = j.job_id
 -- el ultimo AND es la premisa del mismo trabajo que su jefe 
 AND e.job_id = c.job_id
 
+/*1. Calcular el nombre empleats que realitzen cada ofici a cada departament.
+Les dades que es visualitzen són: codi del departament, ofici i nombre empleats.*/
+SELECT departament_id, job_id ,COUNT(employee_id),
+FROM employees  
+GROUP BY departament_id, job_id
+ORDER BY 1, 2
+
+/*2.	Mostra el nom del departament i el número d'emplets que té cada departament. */
+SELECT d.departament_name, COUNT(e.employee_id) AS "NumEmpleats"
+FROM employees e , departament dada
+WHERE d.departament_id = e.departament_id
+GROUP BY 1;
+
+/*3.	Mostra el número d'empletas del departmant de 'SALES'. */
+SELECT d.departament_name, COUNT(e.employee_id) AS "NumeroEmpl"
+FROM employees e , departament d
+WHERE e.departament_id=d.departament_id
+AND LOWER(d.departament_name) ILIKE 'sales'
+GROUP BY 1;
+
+/*4.	Mostra quants departaments diferents hi ha a Seattle. */
+SELECT DISTINCT(departament_id) AS "TotalDepartaments", l.city
+FROM departaments d , locations l
+WHERE d.location_id = l.location_id
+GROUP BY 2
+HAVING LOWER(l.city) ILIKE 'seattle';
+
+
+/*5.	Mostra per cada cap (manager_id), la suma dels salaris dels seus 
+empleats, però només, per aquells casos en els quals la suma del salari 
+dels seus empleats sigui més gran que 50000.*/
+SELECT SUM(salary) AS "SumaSalari", manager_id 
+FROM employees 
+GROUP BY 2
+HAVING SUM(salary) > 50000;
+
+
+/*6.	Mostra per cada cap (manager_id) quants empleats tenen al seu carrec i 
+quin és el salari màxim, però només per aquells caps amb més de 6 empleats 
+al seu càrrec.*/
+SELECT manager_id, COUNT(*) AS "NumEmpl" , MAX(salary) AS "SalariEmpl"
+FROM employees
+GROUP BY manager_id
+HAVING COUNT(*) > 6
+
+/*7.	Fes al mateix que a la consulta anterior, però només per aquells 
+caps que tinguin com a id_manager_id 100, 121 o 122. Ordena els resultats
+per manager_id*/
+SELECT manager_id, COUNT(*) AS "NumEmpl" , MAX(salary) AS "SalariEmpl"
+FROM employees
+WHERE manager_id IN ('100','121','122')
+GROUP BY manager_id
+HAVING COUNT(*) > 6
+ORDER BY manager_id;
+
 -- JOINS --
+/*1. Mostra el nom de l’empleat, el nom del departament on treballa i l'id del seu cap.
+Fes servir primer JOIN i USING i després o resols amb JOIN ON.*/
+SELECT e.firts_name, d.departament_name, e.manager_id
+FROM employees e JOIN  departments d
+ON e.departament_id=d.departament_id
+
+SELECT e.firts_name, d.departament_name, e.manager_id
+FROM employees e JOIN  departments d
+USING (departament_id);
+
+/*2. Mostra la ciutat i el nom del departament de la localització 1400 (LOCATION_ID=1400).
+Primer ho resols fent servir JOIN ON i després fent servir JOIN USING.*/
+SELECT l.city, d.departament_name
+FROM locations l JOIN departaments d
+ON l.location_id=d.location_id
+WHERE location_id = '1400';
+
+SELECT l.city, d.departament_name
+FROM locations l JOIN departaments d
+USING(location_id)
+WHERE location_id = '1400';
+
+/*3. Mostra el cognom i la data de contractació de qualsevol empleat contractat després de
+l’empleat Davies. Fes servir JOIN.*/
+SELECT e.first_name, e.last_name, e.hire_date AS "DataContractacio"
+FROM employees e JOIN employees d
+ON e.hire_date > d.hire_date
+WHERE LOWER(d.first_name) = 'Davies';
+
+/*4. Mostra el nom i cognom dels empleats, el nom del departament on treballen i el nom de la
+ciutat on es troba el departament. Fes servir primer JOIN i USING i després o resols amb
+JOIN ON.*/
+SELECT e.first_name, e.last_name, d.departament_name,l.city
+FROM employees e JOIN departaments d USING(departament_id)
+JOIN locations l USING(location_id);
+
+SELECT e.first_name, e.last_name, d.departament_name,l.city
+FROM employees e JOIN departaments d ON e.departament_id=d.departament_id
+JOIN locations l ON d.location_id=l.location_id
+
+/*5. Mostra l'id del departament i el cognom de l’empleat de tots els empleats que treballin al
+mateix departament que un empleat donat. Assignar a cada columna una etiqueta adequada.
+Fes servir JOIN.*/
+SELECT e.departament_id,e.last_name
+FROM employees e JOIN employees e1
+ON e.departament_id = e1.departament_id
+WHERE e1.last_name = 'Davies';
 
 /*1. Mostra els noms de tots els venedors i si tenen assigant un cap mostra el nom del seu cap
 com a "cap.*/
@@ -156,5 +258,11 @@ SELECT r.nombre AS "NomVenedors" , d.director AS "Cap"
 FROM repventas r LEFT JOIN d repventas
 ON r.director = d.num_empl
 
-
+/*3. Mostra els noms de tots els venedors i si tenen assigant un cap mostra el nom del seu cap
+com a "cap", si tenen una oficina assignada mostra la ciutat on es troba l'oficina, i si l'oficina
+té assignat un director mostra també el nom del director de l'oficina on treballa el venedor
+com a "director". Només es pot utilitzar JOINs.*/
+SELECT r.nombre,d.director, o.ciudad 
+FROM repventas r LEFT JOIN oficinas o ON r.oficina_rep=o.oficina
+LEFT JOIN repventas d ON o.dir=d.num_empl
 
