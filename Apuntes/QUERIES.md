@@ -41,6 +41,7 @@ SELECT e.first_name, d.department_name
 FROM employees e NATURAL JOIN departments d;
 ```
 
+## INNER JOINs
 ### Join
 
 Suposem que tenim les taules `employees` i `departments`, amb la columna comuna `department_id` (que és present en ambdues taules). Per realitzar el **JOIN normal** utilitzem **`ON`** per especificar la condició de la columna comuna.
@@ -60,6 +61,7 @@ SELECT e.first_name, d.department_name
 FROM employees e JOIN departments d
 USING (department_id);
 ```
+## OUTER JOINs
 
 ### LEFT Join
 
@@ -71,4 +73,28 @@ troba l'oficina.*/
 SELECT r.nombre, o.ciudad AS "CiutatOficina"
 FROM repventas r
 LEFT JOIN  oficinas o ON r.oficina_rep = o.oficina;
+```
+
+### Rigth Join
+
+Si utilitzem un RIGHT JOIN, mostrarem totes les files de la taula dreta (en aquest cas, la taula oficinas) incloses aquelles que no tinguin coincidència amb la taula esquerra (repventas).
+```sql
+/* Mostra totes les oficines i, si tenen un venedor assignat, el nom del venedor. */
+SELECT o.ciudad AS "CiutatOficina", r.nombre AS "NomVenedor"
+FROM oficinas o
+RIGHT JOIN repventas r ON o.oficina = r.oficina_rep;
+```
+
+# SUBCONSULTA
+
+Utilitzem subconsultes, per obtenir un resulat mitjançant una resposta no directa sino que es la resposta de la subconsulta. Es recomanable primer fer el filtre (subconsulta), i despres la principal.
+
+```sql
+/*Mostra el nom i el salari dels empleats que el seu salari superi la mitja del salari dels treballadors (SUBCONSULTA)*/ 
+SELECT nom, salari
+FROM empleats
+WHERE salari > (
+    SELECT AVG(salari)
+    FROM empleats
+);
 ```
