@@ -266,3 +266,129 @@ SELECT r.nombre,d.director, o.ciudad
 FROM repventas r LEFT JOIN oficinas o ON r.oficina_rep=o.oficina
 LEFT JOIN repventas d ON o.dir=d.num_empl
 
+/*PROVA EXAMEN*/
+-- Consultes Basiques
+/*3.	 Crea una consulta per a mostrar el cognom i el número de departament de tots els empleats 
+que els seus salari no estiguin dins del rang 5000 i 12000.*/
+SELECT last_name,departament_id
+FROM employees
+WHERE salary NOT IN 5000 BETWEEN 12000;
+/*4.	Crea una consulta per mostrar el cognom de l’empleat, l’identificador del càrrec (JOB:ID) i la data de contractació
+dels empleats contractats entre el 20 de febrer de 1998 i l'1 de maig de 1998. Ordenar la consulta en ordre ascendent per data de contractació.*/
+SELECT last_name, job_id, hire_date
+FROM employees
+WHERE hire_date BETWEEN '20-02-1998' AND '01-05-1998'
+ORDER BY hire_date
+
+/*8.	Crea  una consulta per a mostrar el cognom, el salari i la comissió de tots els empleats que tenen comissions. Ordenar les dades en ordre 
+descendent de salaris i comissions.*/
+SELECT last_name, salary, comission_ptc
+FROM employees
+WHERE comission_ptc IS NOT NULL
+ORDER BY salary, comission_ptc DESC;
+/*11.	Crea una consulta per a mostrar el cognom, el càrrec (JOB_ID) i el salari de tots els empleats on els càrrecs siguin 
+representants de vendes (AC_ACCOUNT) o encarregats de stock (AD_ASST) i els salaris no siguin iguals a 2500, 3500 ni 7000*/
+SELECT last_name, job_id, salary
+FROM employees
+WHERE (job_id = 'AC_ACCOUNT' OR job_id = 'AD_ASST')
+AND salary NOT IN ('2500','3500','7000')
+--Funcions i Agrupacions
+/*2.	Mostra els empleats que han sigut contractas durant el més de maig.*/
+SELECT *  FROM employees WHERE TO_CHAR(hire_date, 'MM') = '05';
+
+/*4.	Calcula quants empleats hi ha en  cada departament.*/
+SELECT COUNT(employee_id), departament_id
+FROM employees
+GROUP BY departament_id
+/*7.	 Mostra per cada manager el manager_id, el nombre d'emplets que té al seu carrec i la mitja 
+dels salaris d'aquests empleats.*/
+SELECT manager_id, COUNT(employee_id) AS "NumEmpleats", AVG(salary)
+FROM employees
+GROUP BY manager_id;
+--Consultes Multitaula
+
+/* 3. Mostra els noms de les ciutats que els noms dels departaments tinguin una u en la segona posició. */
+SELECT l.city, d.departament_name
+FROM departaments d WHERE locations l d.location_id = d.location_id AND d.departament_name LIKE '%u_';
+/* 5. Mostra el job_title i totes les dades dels empleats que el seu job_title sigui Programmer.*/
+SELECT j.job_title, e.*
+FROM jobs j WHERE employees e e.job_id=j.job_id AND LOWER(job_title) LIKE 'programmer';
+/* 9. Mostra els noms de tots els departaments i la ciutat i país on estiguin ubicats.*/
+SELECT d.departament_name,l.city,c.country_name
+FROM departaments d WHERE locations l d.location_id=l.location_id 
+AND l.country_id=c.country_id;
+/* 11. Mostra el cognom dels empleats que tinguin el mateix ofici que el seu cap, el nom del cap i mostra 
+també el nom de l'ofici (job_title).*/
+SELECT e.last_name AS "CognomEmpl",c.first_name AS "NomCap",j.job_title AS "Ofici"
+FROM employees e WHERE employees c e.manager_id=c.employee_id 
+AND e.job_id=j.job_id 
+AND e.job_id=c.job_id
+
+-- Agrupacions Multitaula
+/*1.	Calcular el nombre empleats que realitzen cada ofici a cada departament. 
+Les dades que es visualitzen són: codi del departament, ofici i nombre empleats.*/
+SELECT departament_id, job_id, COUNT(employee_id)
+FROM employees 
+GROUP BY departament_id, job_id
+ORDER BY 1,2;
+/*2.	Mostra el nom del departament i el número d'emplets que té cada departament. */
+SELECT d.departament_name AS "NomDept" , COUNT(*) AS "NumeroEmpleats"
+FROM departaments d WHERE employees e d.departament_id=e.departament_id
+GROUP BY d.departament_name;
+/*3.	Mostra el número d'empletas del departmant de 'SALES'. */
+SELECT COUNT(e.*), d.departament_name
+FROM employees e WHERE departaments d e.departament_id=d.departament_id
+AND LOWER(d.departament_name) LIKE 'sales'
+GROUP BY d.departament_name;
+
+/*5.	Mostra per cada cap (manager_id), la suma dels salaris dels seus empleats, però només, per aquells
+casos en els quals la suma del salari dels seus empleats sigui més gran que 50000.*/
+SELECT manager_id, SUM(salary) AS "SumSalari"
+FROM employees e 
+GROUP BY manager_id
+HAVING SUM(salary) > 50000;
+-- JOINS
+/*3.	Mostra el cognom i la data de contractació de qualsevol empleat contractat després de l’empleat Davies. Fes servir JOIN.*/
+SELECT e.last_name,e.hire_date
+FROM employees e JOIN employees d
+ON ( e.hire_date > d.hire_date ) 
+AND  LOWER(e.first_name) LIKE 'davies';
+
+/*5.	Mostra l'id del departament i el cognom de l’empleat de tots els empleats que treballin al 
+mateix departament  que un empleat donat. Assignar a cada columna una etiqueta adequada. Fes servir JOIN.*/
+SELECT e.departament_id, e.last_name,
+FROM employees e JOIN  
+ON e.departament_id=
+WHERE e.
+
+/*Ex2. Mostra els noms de tots els venedors i si tenen una oficina assignada mostra la ciutat on es troba l'oficina.*/
+SELECT r.nombre, o.ciudad
+FROM repventas r LEFT JOIN oficinas o 
+ON r.oficina_rep=o.oficina
+
+-- SUBCONSULTA 
+-- Trobar els empleats que treballen al mateix departament que 'Steven King'.
+SELECT *
+FROM employees
+WHERE departament_id = ( SELECT departament_id
+                         FROM employees
+                         WHERE LOWER(first_name) = 'steven'
+                         AND LOWER(last_name) = 'king');
+
+--  Llistar els empleats que guanyen més que 'Nancy Greenberg'
+SELECT *
+FROM employees
+WHERE salary > (SELECT salary
+                FROM employees
+                WHERE UPPER(first_name) LIKE 'NANCY' AND UPPER(last_name)='GREENBERG')
+
+-- Localització d'oficines d'un departament específic
+SELECT *
+FROM locations 
+WHERE location_id = (SELECT location_id
+                     FROM departments
+                     WHERE departament_name = 'IT');
+
+
+
+
