@@ -98,3 +98,88 @@ WHERE salari > (
     FROM empleats
 );
 ```
+
+### Operadores Subconsultas
+
+ = (Igual)
+Se usa cuando la subconsulta devuelve un único valor (escalar).
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario es igual al salario promedio de la empresa.*/
+
+    SELECT * 
+    FROM empleats 
+    WHERE salari = (SELECT AVG(salari) FROM empleats);
+```
+
+ IN (Está en la lista)
+ Se usa cuando la subconsulta devuelve múltiples valores y queremos comprobar si un valor está en ese conjunto.
+```sql
+    /*Ejemplo: Obtener empleados que trabajan en departamentos con sede en "Barcelona".*/
+
+    SELECT * 
+    FROM empleats 
+    WHERE id_departament IN (SELECT id_departament FROM departaments WHERE ciutat = 'Barcelona');
+```
+
+NOT IN (No está en la lista)
+Lo contrario de IN, filtra aquellos valores que no están en la subconsulta.
+```sql
+    /*Ejemplo: Obtener empleados que no trabajen en departamentos de Barcelona.*/
+
+    SELECT * 
+    FROM empleats 
+    WHERE id_departament NOT IN (SELECT id_departament FROM departaments WHERE ciutat = 'Barcelona');
+```
+Cuidado con NULL en NOT IN: Si la subconsulta devuelve algún NULL, el resultado será vacío, porque NULL es un valor desconocido y NOT IN no sabe cómo manejarlo.
+
+<> (Distinto de)
+Similar a NOT IN, pero solo funciona cuando la subconsulta devuelve un único valor.
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario no sea el promedio de la empresa.*/
+
+    SELECT * 
+    FROM empleats 
+    WHERE salari <> (SELECT AVG(salari) FROM empleats);
+```
+
+< ANY (Menor que al menos uno)
+Se usa cuando la subconsulta devuelve múltiples valores.
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario sea menor que al menos un salario del departamento de "IT".*/
+
+    SELECT * 
+    FROM empleats 
+    WHERE salari < ANY (SELECT salari FROM empleats WHERE id_departament = 'IT');
+Traducción: "Dame los empleados cuyo salario sea menor que alguno de los salarios de IT". Es como un OR.
+```
+
+< ALL (Menor que todos)
+Se usa para comparar con todos los valores de la subconsulta.
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario sea menor que todos los salarios del departamento de "IT".*/
+
+    SELECT * 
+    FROM empleats 
+    WHERE salari < ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
+```
+Traducción: "Dame los empleados cuyo salario sea menor que el más bajo de IT". Es como un AND.
+> ANY (Mayor que al menos uno)
+Similar a < ANY, pero buscando valores mayores.
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario sea mayor que al menos un salario del departamento de "IT".*/
+
+    SELECT * 
+    FROM empleats 
+    WHERE salari > ANY (SELECT salari FROM empleats WHERE id_departament = 'IT');
+```
+Traducción: "Dame empleados que ganan más que el peor pagado de IT".
+
+> ALL (Mayor que todos)
+Similar a < ALL, pero buscando valores mayores.
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario sea mayor que todos los salarios del departamento de "IT".*/
+
+SELECT * 
+FROM empleats 
+WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
+```
