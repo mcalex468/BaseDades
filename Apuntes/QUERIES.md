@@ -183,3 +183,62 @@ SELECT *
 FROM empleats 
 WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
 ```
+
+```sql
+-- Subconsulta Normal
+SELECT v.*
+FROM repventas v
+WHERE num_empl IN ( SELECT rep
+                    FROM pedidos p
+                    GROUP BY rep
+                    HAVING SUM(p.importe) < 30000 );
+-- Subconsulta Correlacionada
+SELECT v.*
+FROM repventas v
+WHERE 30000 > ( SELECT SUM(importe)
+                FROM pedidos p
+                WHERE v.num_empl=p.rep);
+
+-- Exercici 2
+-- Subconsulta Normal
+SELECT *
+FROM clientes
+WHERE num_clie IN ( SELECT clie
+                    FROM pedidos
+                    GROUP BY clie
+                    HAVING SUM(importe) < 20000);
+
+-- Subconsulta Correlacionada
+SELECT c.*
+FROm clientes c
+WHERE 20000 > (SELECT SUM(importe)
+                FROM pedidos p
+                WHERE c.num_clie=p.clie);
+
+-- Exercici 3
+-- JOIN , GROUP BY
+SELECT r.nombre, COUNT(num_pedido),SUM(importe),MIN(importe),MAX(importe),ROUND(AVG(importe),2)
+FROM repventas r JOIN pedidos p on r.num_empl = p.rep
+GROUP BY 1;
+
+-- Subconsulta Correlacionada
+SELECT r.nombre,
+(SELECT COUNT(num_pedido) FROM pedidos p WHERE r.num_empl=p.rep),
+(SELECT SUM(importe) FROM pedidos p WHERE r.num_empl=p.rep),
+(SELECT MAX(importe) FROM pedidos p WHERE r.num_empl=p.rep),
+(SELECT MIN(importe) FROM pedidos p WHERE r.num_empl=p.rep),
+(SELECT ROUND(AVG(importe),2) FROM pedidos p WHERE r.num_empl=p.rep)
+FROM repventas r
+WHERE (SELECT COUNT(num_pedido) FROM pedidos p WHERE r.num_empl=p.rep) > 0;
+
+
+-- Exercici 4
+SELECT *
+FROM clientes c
+WHERE 1000 > ANY (SELECT importe
+                  FROM pedidos p
+                  WHERE c.num_clie=p.clie );
+
+-- < ANY --> MIN
+-- > ALL --> MAX
+```
