@@ -187,6 +187,19 @@ Se usa cuando la subconsulta devuelve múltiples valores.
 Traducción: "Dame los empleados cuyo salario sea menor que alguno de los salarios de IT". Es como un OR.
 ```
 
+> ANY (Mayor que al menos uno)
+> Similar a < ANY, pero buscando valores mayores.
+
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario sea mayor que al menos un salario del departamento de "IT".*/
+
+    SELECT *
+    FROM empleats
+    WHERE salari > ANY (SELECT salari FROM empleats WHERE id_departament = 'IT');
+```
+
+Traducción: "Dame empleados que ganan más que el peor pagado de IT".
+
 < ALL (Menor que todos)
 Se usa para comparar con todos los valores de la subconsulta.
 
@@ -202,30 +215,6 @@ Traducción: "Dame los empleados cuyo salario sea menor que el más bajo de IT".
 
 > ALL (Mayor que todos)
 > ALL --> MAX
-
-```sql
-    /*Ejemplo: Obtener empleados cuyo salario sea mayor que todos los salarios del departamento de "IT".*/
-
-SELECT *
-FROM empleats
-WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
-```
-
-> ANY (Mayor que al menos uno)
-> Similar a < ANY, pero buscando valores mayores.
-
-```sql
-    /*Ejemplo: Obtener empleados cuyo salario sea mayor que al menos un salario del departamento de "IT".*/
-
-    SELECT *
-    FROM empleats
-    WHERE salari > ANY (SELECT salari FROM empleats WHERE id_departament = 'IT');
-```
-
-Traducción: "Dame empleados que ganan más que el peor pagado de IT".
-
-> ALL (Mayor que todos)
-> Similar a < ALL, pero buscando valores mayores.
 
 ```sql
     /*Ejemplo: Obtener empleados cuyo salario sea mayor que todos los salarios del departamento de "IT".*/
