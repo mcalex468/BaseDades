@@ -561,10 +561,103 @@ WHERE location_id = ( SELECT location_id
                         FROM locations
                         WHERE city = 'Seattle');
 
--- SUBCONSULTA 
+-- JOIN
+/*3.	Mostra el número d'empletas del departmanet anomenat 'Sales'. 
+Reanomena el número d'empleats com a "Num Empleats".*/
+SELECT d.departament_id,COUNT(e.employee_id) AS "Num Empleats"
+FROM employees e JOIN departaments d USING(departament_id)
+WHERE d.departament_name LIKE 'Sales';
+
+
+/*4.	Mostra el nom del continent i el número de països de cada continent.*/
+SELECT r.region_name, COUNT(c.country_id)
+FROM regions r JOIN countries c ON r.region_id=c.region_id
+GROUP BY 1;
 
 
 -- SUBCONSULTA 
+/*1.	Mostra els departaments en els que hi hagi persones amb noms que comencen per la lletra A. */
+SELECT departament_name
+FROM departments  
+WHERE departament_id IN ( SELECT departament_id
+                          FROM employees
+                          WHERE first_name LIKE 'A%');
 
+/*5.	Mostra els cognom de tots els empleats que el seu lloc de treball sigui Sales Manager.*/
+SELECT last_name
+FROM employees
+WHERE job_id IN ( SELECT job_id
+                  FROM jobs
+                  WHERE job_title 'Sales manager');
+
+/*11.	Mostra el nom i l'edat de totes les persones de l'equip de vendes que no dirigeixen una oficina. Utilitza una
+Subconsulta.*/
+SELECT nombre, edad
+FROM repventas v
+WHERE num_empl != ALL ( SELECT dir 
+                       FROM oficinas );
+
+-- AVANÇADA
+/*5. 	Mostra el id i el número d'empleats del departament que té més empleats.*/
+SELECT departament_id, COUNT(employee_id)
+FROM employees
+GROUP BY departament_id
+HAVING COUNT(employee_id) = ( SELECT MAX(c)
+                              FROM ( SELECT COUNT(employee_id) AS c
+                                               FROM employees
+                                               GROUP BY departament_id ) AS d );
+
+
+/*6. Fes servir la consulta anterior per trobar el nom del departament que més empleats té.*/
+SELECT e.departament_id, COUNT(e.employee_id), d.departament_name
+FROM departaments d , employees e
+WHERE d.departament_id=e.departament_id 
+GROUP BY 1,3
+HAVING COUNT(e.employee_id) IN ( SELECT MAX(c)
+                                 FROM ( SELECT COUNT(employee_id) AS c
+                                        FROM employees
+                                        GROUP BY departament_id ) AS d );
 
 -- SUBCONSULTA CORRELACIONADA
+
+/*Exercici 1. BBDD Training
+Mostrar totes les dades dels venedors que la suma total dels imports de les comandes que ha tramitat
+és més petit de 30000. (Utilitza una subconsulta correlacionada).*/
+SELECT v.*
+FROM repventas v
+WHERE 30000 > (SELECT SUM(importe)
+               FROM pedidos p
+               WHERE v.num_empl=p.rep); 
+
+/*Exercici 2. BBDD Training
+Mostrar totes les dades d’aquells clients que la suma dels imports de les seves comandes sigui inferior
+a 20000. (Utilitza una subconsulta correlacionada).
+*/
+SELECT c.*
+FROM clients c
+WHERE 20000 > (SELECT SUM(importe)
+               FROM pedidos p
+               WHERE c.num_clie=p.clie);
+/*Exercici 3. BBDD Training
+Mostrar les següents dades de les comandes tramitades per cada venedor: nom_venedor,
+quantitat_comandes, import_total, import_minim, import_maxim, importe_promig. Si el venedor no
+ha fet cap comanda no el mostris. (Utilitza subconsultes correlaciondes per mostrar els resultat quan
+pertorqui).*/
+SELECT v.nombre,
+(SELECT COUNT(num_pedido) FROM pedidos p WHERE v.num_empl=p.rep),
+(SELECT SUM(importe) FROM pedidos p WHERE v.num_empl=p.rep),
+(SELECT MAX(importe) FROM pedidos p WHERE v.num_empl=p.rep),
+(SELECT MIN(importe) FROM pedidos p WHERE v.num_empl=p.rep),
+(SELECT AVG(importe) FROM pedidos p WHERE v.num_empl=p.rep)
+FROM repventas v
+WHERE (SELECT COUNT(num_pedido) FROM pedidos p WHERE v.num_empl=p.rep) > 0;
+/*Exercici 5. BBDD Training
+Mostra l'identificador dels clients que han fet més compres (que ha fet més comandes) i el número de
+comandes que ha fet.*/
+SELECT p.clie, COUNT(p.num_pedido)
+FROM pedidos
+GROUP BY 1
+HAVING COUNT(p.num_pedido) = (SELECT MAX(c)
+                              FROM ( SELECT SUM(num_pedido) AS c
+                                     FROM pedidos
+                                     GROUP BY clie) AS a );
