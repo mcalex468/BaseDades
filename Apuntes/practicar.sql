@@ -389,6 +389,182 @@ WHERE location_id = (SELECT location_id
                      FROM departments
                      WHERE departament_name = 'IT');
 
+                    
+/*Preparació Examen 2*/
+-- Consultes Facils
+/*1️⃣ Mostra el nom, cognom i salari de tots els empleats que guanyen més de 5000 euros.
+2️⃣ Llista els empleats que treballen al departament 50.
+3️⃣ Mostra el nom i salari dels empleats el nom dels quals comenci per 'J'.
+4️⃣ Mostra el nom del departament i la quantitat d'empleats que hi treballen.*/
+SELECT first_name, salary
+FROM employees
+WHERE salary > 5000;
+
+SELECT *
+FROM employees
+WHERE departament_id = '50';
+
+SELECT first_name
+FROM employees
+WHERE first_name LIKE 'J%';
+
+SELECT departament_name, COUNT(departament_id) AS "Quantitat Empleats"
+FROM departments 
+--3. Calcula el màxim salari per cadascun dels
+ -- grups d'empleats classificats per tipus de treball (Job_id)
+SELECT job_id,MAX(salary)
+FROM employees
+GROUP BY job_id;
+
+--7. Ara mostra la suma dels sous dels empleats per cada 
+--ofici, però mosta només els que la suma sigui superior a 60000 
+SELECT job_id, SUM(salary)
+FROM employees
+GROUP BY job_id
+HAVING SUM(salary) > 60000;
+
+--5. Mostra quant guanyen en total tots
+-- els empleats que són Stock Manager (job_id= ST_MAN).
+SELECT job_id,SUM(salary)
+FROM employees
+WHERE job_id = 'ST_MAN'
+GROUP BY job_id;
+
+
+-- Consultes Multitaula
+SELECT e.first_name,e.last_name,d.departament_name
+FROM employees e , departments d 
+WHERE e.departament_id=d.departament_id
+
+SELECT employee_id,l.city
+FROM employees e, locations l
+WHERE e.location_id
+/* 3.	Mostra totes les dades dels empleats 
+que treballen en el departament de Marketing*/
+SELECT e.*,d.departament_name
+FROM employees e , departaments d
+WHERE e.departament_id=d.departament_id
+AND d.departament_name like 'Marketing';
+
+/*6.	Mostra l’identificador d'empleat, 
+el cognom i l'ofici (job_title) dels empleats del departament 80.*/
+SELECT e.employee_id,j.job_title
+FROM employees e , departments d
+WHERE e.departament_id=d.departament_id
+AND d.departament_id = 80;
+
+/* 8.	Mostra  el cognom, nom d’ofici i nom de departament de tots 
+els empleats que el seu cognom comença per ‘a’ i tingui més de 6 lletres.*/
+SELECT last_name,job_title,departament_name
+FROM employees e , departaments d , jobs j 
+WHERE e.departament_id=d.departament_id AND j.jobs_id=e.jobs_id
+AND LOWER(first_name) LIKE 'a%' AND length(last_name) > 6;
+
+/* 9.	Mostra el nom i cognom dels empleats conjuntament amb el 
+nom i cognom del seu corresponent cap, ordenat pel cognom del cap.*/
+SELECT e.first_name,e.last_name,c.first_name, c.last_name
+FROM employees e , employees c
+WHERE e.manager_id=c.employee_id
+ORDER BY c.last_name;
+
+
+/*14.	A la taula empleats, visualitza, per tots els caps (manager_id) el número d'empleats que té 
+al seu carrec i la mitja dels salaris d'aquests empleats. Reanomena els camps com "id cap"
+"Num Empleats" i "Mitjana Salari". El camp del salari mostra'l com número enter sense
+decimals.*/
+
+SELECT manager_id AS "Id Cap",COUNT(employee_id) AS "Num Empleats", ROUND(AVG(salary),1) AS "Mitja Salary"
+FROM employees
+GROUP BY manager_id;
+
+-- Joins
+/*3.	Mostra el número d'empletas del departmanet anomenat 'Sales'.
+Reanomena el número d'empleats com a "Num Empleats".*/
+SELECT COUNT(e.employee_id) AS "Num Empleats"
+FROM employees e JOIN departaments d USING(departament_id)
+WHERE departament_name LIKE 'Sales' 
+
+/*4.	Mostra el nom del continent i el número de països de cada continent.*/
+SELECT r.region_name,COUNT(c.country_id)
+FROM regions r JOIN countries c USING(region_id)
+GROUP BY r.region_name
+
+
+/*2.	Mostra el cognom i la data de contractació per a tots els empleats contractats
+ abans que els seus directors,  juntament amb els cognoms i data de contractació dels 
+ directors. Anomenar les columnes com a "Employee", "Emp Hiredate", "Manager" i
+ "Mgr Hiredate" respectivament. Fes servir JOIN.*/
+SELECT e.first_name AS "Emp",e.hire_date AS "Emp Hiredate",d.last_name AS "Manager" ,d.hire_date AS "MGR Hiredate"
+FROM employees e JOIN employees d
+ON e.manager_id=d.employee_id AND e.hire_date < d.hire_date;
+
+-- Left
+SELECT *.e
+FROM employees e 
+LEFT JOIN departaments d ON e.departament_id=d.departament_id;
+
+-- Rigth
+SELECT e.*,d.departament_name
+FROM employees e
+RIGHT JOIN departaments d USING(departament_id);
+
+-- Subconsultes
+-- =,>,<,IN, NOT IN, ANY, ALL
 
 
 
+/*1.	Mostra els departaments en els que hi hagi persones amb noms 
+que comencen  per la lletra A. */
+
+SELECT departament_name
+FROM departaments d
+WHERE departament_id IN ( SELECT departament_id
+                          FROM employees
+                          WHERE first_name LIKE 'A%');
+
+/*3.	Mostra els cognoms dels empleats que treballin en un departament amb un codi més 
+alt que el codi del departament  de Vendes (Sales) (fer-ho mitjançant subconsulta i 
+mitjançant consulta multitaula)*/
+SELECT last_name
+FROM employees
+WHERE departament_id > ( SELECT departament_id
+                         FROM departments
+                         WHERE departament_name LIKE 'Sales');
+
+/*4.	Mostra els cognoms i els salaris dels empleats
+que tenen un salari inferior al salari mitja (AVG(salary))*/
+SELECT last_name, salary 
+FROM employees
+WHERE salary < ( SELECT AVG(salary)
+                 FROM employees);
+
+/*6.	Mostra els cognoms de tots els empleats que no treballin al departament on
+ treballa Steven King.*/
+ SELECT last_name
+ FROM employees
+ WHERE departament_id <> ( SELECT departament_id
+                           FROM employees
+                           WHERE first_name='Steven'
+                           AND last_name='King'); 
+
+/*10.	Mostra el nom i l'edat de totes les persones de l'equip de vendes que 
+dirigeixen una oficina. Utilitza una Subconsulta.*/
+SELECT nombre,edad
+FROM repventas
+WHERE num_empl IN ( SELECT dir
+                    FROM oficinas );
+
+/*8.	Mostra els noms dels departaments que estan a Seattle.*/
+SELECT departament_name
+FROM departaments 
+WHERE location_id = ( SELECT location_id
+                        FROM locations
+                        WHERE city = 'Seattle');
+
+-- SUBCONSULTA 
+
+
+-- SUBCONSULTA 
+
+
+-- SUBCONSULTA CORRELACIONADA
