@@ -223,3 +223,14 @@ WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
 ```
 
 Traducción: "Dame empleados que ganan más que el peor pagado de IT".
+
+> ALL (Mayor que todos)
+> Similar a < ALL, pero buscando valores mayores.
+
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario sea mayor que todos los salarios del departamento de "IT".*/
+
+SELECT *
+FROM empleats
+WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
+```
