@@ -82,5 +82,4 @@ DO $$
             RAISE NOTICE 'Error: %', SQLERRM;
     END;
 $$ LANGUAGE plpgsql;
-
 ```
