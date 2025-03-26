@@ -345,7 +345,7 @@ $$ LANGUAGE plpgsql;
 - **`CREATE FUNCTION`** → Retorna valores, se usa en `SELECT`
 - **`CREATE PROCEDURE`** → No retorna valores, ejecuta acciones
 - **`DO $$`** → Bloques anónimos
-- **Manejo de errores** con `RAISE EXCEPTION`
+- **Manejo de errores** con `RAISE NOTICE`
 - **Bucle** con `FOR`, `WHILE`, `LOOP`
 - **Tipos personalizados** con `CREATE TYPE`
 
