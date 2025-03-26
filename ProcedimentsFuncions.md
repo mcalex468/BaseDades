@@ -11,6 +11,57 @@ CREATE TYPE loc_pais_type AS (
 );
 ```
 
+## 🔹 1.1 Tipos de Datos Record (`RECORD`)
+Flexible: RECORD permite almacenar una fila con una estructura dinámica. No está asociada a una tabla o vista específica, por lo que se puede usar para almacenar cualquier resultado de consulta.
+Acceso a datos: Puedes acceder a las columnas por nombre de columna o por índice.
+```sql
+DO $$
+DECLARE
+    v_record RECORD;  -- Declaramos la variable RECORD
+BEGIN
+    -- Realizamos una consulta que une dos tablas: departments y employees
+    SELECT d.department_id, d.department_name, e.employee_id, e.first_name
+    INTO v_record
+    FROM departments d
+    JOIN employees e ON d.department_id = e.department_id
+    WHERE d.department_id = 10;  -- Filtro por department_id
+
+    -- Mostramos los resultados utilizando RAISE NOTICE
+    RAISE NOTICE 'Department ID: %, Department Name: %, Employee ID: %, Employee Name: %',
+        v_record.department_id,
+        v_record.department_name,
+        v_record.employee_id,
+        v_record.first_name;
+END;
+$$ LANGUAGE plpgsql;
+
+```
+
+## 🔹 1.2 Tipos de Datos Rowtype (`ROWTYPE`)
+Estructura Fija: ROWTYPE define una variable que tiene la misma estructura que una fila de una tabla o vista específica.
+
+Acceso a datos: Se accede a las columnas por su nombre, ya que la estructura está definida.
+
+```sql
+DO $$
+DECLARE
+    v_dept departments%ROWTYPE;  -- Variable de tipo ROWTYPE, asociada a la tabla "departments"
+BEGIN
+    -- Realizamos una consulta para obtener una fila de la tabla departments
+    SELECT * INTO v_dept
+    FROM departments
+    WHERE department_id = 10;  -- Filtro por department_id
+
+    -- Mostramos los resultados utilizando RAISE NOTICE
+    RAISE NOTICE 'Department ID: %, Department Name: %, Manager ID: %, Location ID: %',
+        v_dept.department_id,
+        v_dept.department_name,
+        v_dept.manager_id,
+        v_dept.location_id;
+END;
+$$ LANGUAGE plpgsql;
+```
+
 ---
 
 ## 🔹 2. Funciones (`CREATE FUNCTION`)
