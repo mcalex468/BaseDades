@@ -244,6 +244,39 @@ $$ LANGUAGE plpgsql;
 
 ```
 
+```sql
+-- Procedimiento para obtener información de un departamento usando RECORD
+CREATE OR REPLACE PROCEDURE proc_info_dept(p_dept_id departments.department_id%TYPE) AS $$
+    DECLARE
+        -- Variable de tipo RECORD para almacenar la información del departamento
+        v_dept_record RECORD;
+    BEGIN
+        -- Consulta para obtener la información del departamento
+        SELECT department_id, department_name, manager_id, location_id
+        INTO v_dept_record
+        FROM departments
+        WHERE department_id = p_dept_id;
+
+        -- Mostrar la información del departamento usando RAISE NOTICE
+        RAISE NOTICE 'Departamento ID: %, Nombre: %, Manager ID: %, Ubicación ID: %',
+            v_dept_record.department_id,
+            v_dept_record.department_name,
+            v_dept_record.manager_id,
+            v_dept_record.location_id;
+    END;
+$$ LANGUAGE plpgsql;
+
+-- Bloque anónimo para obtener el p_dept_id y llamar al procedimiento
+DO $$
+    DECLARE
+    v_dept_id departments.department_id%TYPE :=:v_dept_id;  
+    -- Llamamos al procedimiento pasando el v_dept_id como parámetro
+    CALL proc_info_dept(v_dept_id);
+    END;
+$$ LANGUAGE plpgsql;
+
+```
+
 ---
 
 ## 🔹 Conclusión
