@@ -151,6 +151,99 @@ END;
 $$ LANGUAGE plpgsql;
 ```
 
+```sql
+-- Procedimiento para insertar el departamento
+CREATE PROCEDURE proc_alta_dept() AS $$
+    DECLARE
+        v_dept_id departments.department_id%TYPE;
+        v_dept_name departments.department_name%TYPE;
+        v_manager_id departments.manager_id%TYPE;
+        v_loc_id departments.location_id%TYPE;
+    BEGIN
+        -- Asignar los valores
+        v_dept_id := 10;  -- Ejemplo de valor
+        v_dept_name := 'Departamento de Ejemplo';  -- Ejemplo de valor
+        v_manager_id := 5;  -- Ejemplo de valor
+        v_loc_id := 100;  -- Ejemplo de valor
+
+        -- Insertar el nuevo departamento
+        INSERT INTO departments (department_id, department_name, manager_id, location_id)
+        VALUES (v_dept_id, v_dept_name, v_manager_id, v_loc_id);
+
+        RAISE NOTICE 'Departamento insertado correctamente';
+    END;
+$$ LANGUAGE plpgsql;
+
+-- Función para comprobar si el departamento existe
+CREATE OR REPLACE FUNCTION func_compv_dept() RETURNS BOOLEAN LANGUAGE plpgsql AS $$
+DECLARE
+    var_dptId departments.department_id%TYPE;
+BEGIN
+    -- Supongamos que el ID del departamento es 10
+    SELECT department_id INTO var_dptId FROM departments WHERE department_id = 10;
+    RAISE NOTICE 'Departamento encontrado';
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Función para comprobar si el manager existe
+CREATE OR REPLACE FUNCTION func_compv_mng() RETURNS BOOLEAN LANGUAGE plpgsql AS $$
+DECLARE
+    var_manager departments.manager_id%TYPE;
+BEGIN
+    -- Supongamos que el ID del manager es 5
+    SELECT manager_id INTO var_manager FROM departments WHERE manager_id = 5;
+    RAISE NOTICE 'Manager encontrado';
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Función para comprobar si la ubicación existe
+CREATE OR REPLACE FUNCTION func_compv_loc() RETURNS BOOLEAN LANGUAGE plpgsql AS $$
+DECLARE
+    var_location departments.location_id%TYPE;
+BEGIN
+    -- Supongamos que el ID de la ubicación es 100
+    SELECT location_id INTO var_location FROM departments WHERE location_id = 100;
+    RAISE NOTICE 'Ubicación encontrada';
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Bloque anónimo para llamar al procedimiento con valores validados
+DO $$
+    DECLARE
+        v_dept_id departments.department_id%TYPE := 10;
+        v_dept_name departments.department_name%TYPE := 'Departamento de Ejemplo';
+        v_manager_id departments.manager_id%TYPE := 5;
+        v_loc_id departments.location_id%TYPE := 100;
+    BEGIN
+        -- Validaciones con funciones
+        IF func_compv_dept() THEN
+            RAISE NOTICE 'El ID del departamento ya existe.';
+        ELSE
+            RAISE NOTICE 'El ID del departamento no existe.';
+        END IF;
+
+        IF func_compv_mng() THEN
+            RAISE NOTICE 'El ID del manager existe.';
+        ELSE
+            RAISE NOTICE 'El ID del manager no existe.';
+        END IF;
+
+        IF func_compv_loc() THEN
+            RAISE NOTICE 'El ID de la ubicación existe.';
+        ELSE
+            RAISE NOTICE 'El ID de la ubicación no existe.';
+        END IF;
+
+        -- Llamar al procedimiento para insertar el nuevo departamento
+        CALL proc_alta_dept();
+    END;
+$$ LANGUAGE plpgsql;
+
+```
+
 ---
 
 ## 🔹 Conclusión
@@ -161,5 +254,4 @@ $$ LANGUAGE plpgsql;
 - **Bucle** con `FOR`, `WHILE`, `LOOP`
 - **Tipos personalizados** con `CREATE TYPE`
 
-🚀 **¡Listo para usar en tu proyecto!**
 
