@@ -223,3 +223,10 @@ SELECT *
 FROM empleats
 WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
 ```
+```sql
+    /*Ejemplo: Obtener empleados cuyo salario sea mayor que todos los salarios del departamento de "IT".*/
+
+SELECT *
+FROM empleats
+WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
+```
