@@ -328,6 +328,17 @@ $$ LANGUAGE plpgsql;
 
 ```
 
+```sql
+-- Bloque anónimo para obtener el p_dept_id y llamar al procedimiento
+DO $$
+    DECLARE
+    v_dept_id departments.department_id%TYPE :=:v_dept_id;  
+    -- Llamamos al procedimiento pasando el v_dept_id como parámetro
+    CALL proc_info_dept(v_dept_id);
+    END;
+$$ LANGUAGE plpgsql;
+```
+
 ---
 
 ## 🔹 Conclusión
