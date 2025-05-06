@@ -7,42 +7,43 @@ El procediment ha d’utilitzar un cursor que al SELECT es pot utilitzar el LIMI
 retorna. Quan s’executi el procediment es mostrarà el següent missatge: "L`empleat <FIRST_NAME>,<
 LAST_NAME>, amb id <EMPLOYEE_ID> serà eliminat.*/
 
-CREATE OR REPLACE FUNCTION func_comprv_dept(par_dept_id DEPARTMENTS.departament_id%TYPE)
-RETURNS BOOLEAN language plpgsql as $$
+CREATE OR REPLACE FUNCTION func_comprv_dept(param_dept_name DEPARTMENTS.department_name%TYPE)
+RETURNS BOOLEAN
+LANGUAGE plpgsql AS $$
 DECLARE
-var_deptId DEPARTMENTS.departament_id%TYPE;
+    var_deptId departments.department_id%TYPE;
 BEGIN
-SELECT departament_id
-INTO STRICT var_deptId
-FROM departaments
-WHERE departament_id = par_dept_id
-RETURN TRUE;
+    SELECT department_id INTO STRICT var_deptId
+    FROM departments
+    WHERE department_name = param_dept_name;
+    RETURN TRUE;
 EXCEPTION
-WHEN NO_DATA_FOUND THEN
-RETURN FALSE;
-WHEN OTHERS THEN
-RAISE EXCEPTION 'ERROR GENERAL';
-END;$$;
+    WHEN NO_DATA_FOUND THEN
+        RETURN FALSE;
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'ERROR GENERAL';
+END;
+$$;
 
-CREATE OR REPLACE PROCEDURE proc_elim_nous_emps(par_nom TEXT)
+CREATE OR REPLACE PROCEDURE proc_elim_nous_emps(param_dept_name departments.department_name%TYPE)
 LANGUAGE plpgsql AS $$
 DECLARE
     rec_empleat RECORD;
     dept_id departments.department_id%TYPE;
-    cursor_emps CURSOR FOR
-        SELECT employee_id, first_name, last_name
-        FROM employees
-        WHERE department_id = dept_id
-        ORDER BY hire_date DESC
-        LIMIT 2;
 BEGIN
     -- Obtenir ID del departament
     SELECT department_id INTO dept_id
     FROM departments
-    WHERE department_name = par_nom;
+    WHERE department_name = param_dept_name;
 
-    -- Obrir cursor i eliminar
-    FOR rec_empleat IN cursor_emps LOOP
+    -- Bucle amb SELECT directe (no es pot fer LIMIT en cursor amb variable no inicialitzada abans)
+    FOR rec_empleat IN
+        SELECT employee_id, first_name, last_name
+        FROM employees
+        WHERE department_id = dept_id
+        ORDER BY hire_date DESC
+        LIMIT 2
+    LOOP
         RAISE NOTICE 'L`empleat %, %, amb id % serà eliminat.',
             rec_empleat.first_name, rec_empleat.last_name, rec_empleat.employee_id;
 
@@ -93,6 +94,21 @@ nivell_trigger text,
 ordre text );
 Has de fer el joc de proves per comprovar el funcionament dels disparadors.
 */
+CREATE TABLE canvis_locations (
+id INT GENERATED ALWAYS AS IDENTITY,
+location_id numeric(11) NOT NULL,
+city_old VARCHAR(30) NOT NULL,
+city_new VARCHAR(30) not null,
+changed_on TIMESTAMP(6) NOT NULL);
+
+CREATE OR REPLACE FUNCTION func_registrar_canvis_loc() 
+
+
+CREATE TRIGGER trig_registrar_canvis_loc
+BEFORE INSERT OR UPDATE ON employees
+FOR EACH ROW
+EXECUTE FUNCTION func_registrar_canvis_loc();
+
 
 
 
