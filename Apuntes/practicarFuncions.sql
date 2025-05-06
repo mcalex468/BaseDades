@@ -24,32 +24,47 @@ WHEN OTHERS THEN
 RAISE EXCEPTION 'ERROR GENERAL';
 END;$$;
 
-CREATE OR REPLACE PROCEDURE proc_elim_nous_emps(DEPARTMENTS.departament_id%TYPE) language plpgsql AS $$
+CREATE OR REPLACE PROCEDURE proc_elim_nous_emps(par_nom TEXT)
+LANGUAGE plpgsql AS $$
 DECLARE
-    cursor
-
+    rec_empleat RECORD;
+    dept_id departments.department_id%TYPE;
+    cursor_emps CURSOR FOR
+        SELECT employee_id, first_name, last_name
+        FROM employees
+        WHERE department_id = dept_id
+        ORDER BY hire_date DESC
+        LIMIT 2;
 BEGIN
+    -- Obtenir ID del departament
+    SELECT department_id INTO dept_id
+    FROM departments
+    WHERE department_name = par_nom;
 
+    -- Obrir cursor i eliminar
+    FOR rec_empleat IN cursor_emps LOOP
+        RAISE NOTICE 'L`empleat %, %, amb id % serà eliminat.',
+            rec_empleat.first_name, rec_empleat.last_name, rec_empleat.employee_id;
+
+        DELETE FROM employees WHERE employee_id = rec_empleat.employee_id;
+    END LOOP;
 END;
+$$;
 
-
-
-DO
-$$
+DO $$
 DECLARE
-var_deptId DEPARTMENTS.departament_id%TYPE = :vdepId;
-var_deptName DEPARTMENTS.departament_name%TYPE = :vdeptName;
+    nom_dept DEPARTMENTS.department_name%TYPE :=: vdeptName;
 BEGIN
-IF func_comprv_dept(var_deptId) THEN
-CALL proc_elim_nous_emps(var_deptName);
-ELSE
-RAISE NOTICE 'Aquest location_id no existeix';
-END IF;
+    IF func_comprv_dept(nom_dept) THEN
+        CALL proc_elim_nous_emps(nom_dept);
+    ELSE
+        RAISE NOTICE 'Aquest departament no existeix';
+    END IF;
 EXCEPTION
-WHEN OTHERS THEN
-RAISE EXCEPTION 'ERROR GENERAL';
+    WHEN OTHERS THEN
+        RAISE NOTICE 'ERROR GENERAL';
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 
 /*
