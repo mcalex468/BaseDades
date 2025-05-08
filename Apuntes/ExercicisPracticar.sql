@@ -373,3 +373,52 @@ EXCEPTION
         RAISE NOTICE 'Codi de l''error: %, Missatge: %', SQLSTATE, SQLERRM;
 END;
 $$;
+
+
+EX1 (segunda version)
+CREATE OR REPLACE PROCEDURE proc_info_pacients(p_dni_metge INTEGER)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_existeix BOOLEAN;
+    v_te_visites BOOLEAN;
+    v_cognom_metge PERSONA.cognom1%TYPE;
+    v_email_pacient PACIENT.email%TYPE;
+    
+    curs_pacients CURSOR FOR
+        SELECT DISTINCT p.dni, p.cognom1, p.data_naix, p.telefon, p.email
+        FROM visita v
+        JOIN pacient p ON v.dni_pacient = p.dni
+        WHERE v.dni_metge = p_dni_metge;
+
+    v_pacient RECORD;
+BEGIN
+    SELECT EXISTS (SELECT 1 FROM metge WHERE dni = p_dni_metge) INTO v_existeix;
+    IF NOT v_existeix THEN
+        RAISE EXCEPTION 'Error! El metge amb DNI % no existeix.', p_dni_metge;
+    END IF;
+
+    SELECT EXISTS (SELECT 1 FROM visita WHERE dni_metge = p_dni_metge) INTO v_te_visites;
+    IF NOT v_te_visites THEN
+        RAISE EXCEPTION 'Error! El metge amb DNI % no té cap visita registrada.', p_dni_metge;
+    END IF;
+
+    SELECT cognom1 INTO v_cognom_metge
+    FROM persona
+    WHERE dni = p_dni_metge;
+
+    FOR v_pacient IN curs_pacients LOOP
+        RAISE NOTICE 'Pacient: DNI=%, Cognom=%, Naixement=%, Telèfon=%',
+            v_pacient.dni, v_pacient.cognom1, v_pacient.data_naix, v_pacient.telefon;
+
+        UPDATE pacient
+        SET email = LOWER(v_cognom_metge || '_' || v_pacient.email)
+        WHERE dni = v_pacient.dni;
+    END LOOP;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error detectat: Codi=%, Missatge=%', SQLSTATE, SQLERRM;
+END;
+$$;
+
