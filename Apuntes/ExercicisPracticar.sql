@@ -317,3 +317,59 @@ Crea una vista de nom clients_vip_view que mostri únicament aquells clients que
 superin 30000. Crea també les tres regles corresponents per que es puguin fer els inserts, els updates i els deletes correctament 
 a la taula CLIENTES en en cas que es vulguin fer a la nova vista creada.
 Realitza les proves corresponents per comprovar que les regles creades funcionen correctament.*/
+
+Exercici 1
+CREATE OR REPLACE PROCEDURE proc_info_pacients(p_dni_metge NUMERIC)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    existeix_metge INTEGER;
+
+    CURSOR cur_pacients IS
+        SELECT DISTINCT p.dni, p.cognom1, p.data_naix, p.telefon, p.mail, m.cognom1 AS cognom_metge
+        FROM visita v
+        JOIN pacient pa ON v.dni_pacient = pa.dni_pacient
+        JOIN persona p ON pa.dni_pacient = p.dni
+        JOIN metge me ON v.dni_metge = me.dni_metge
+        JOIN persona m ON me.dni_metge = m.dni
+        WHERE me.dni_metge = p_dni_metge;
+
+    rec_pacient RECORD;
+    contador INTEGER := 0;
+
+BEGIN
+    SELECT COUNT(*) INTO existeix_metge
+    FROM metge
+    WHERE dni_metge = p_dni_metge;
+
+    IF existeix_metge = 0 THEN
+        RAISE EXCEPTION 'Error El metge amb DNI % no existeix', p_dni_metge;
+    END IF;
+
+    OPEN cur_pacients;
+
+    LOOP
+        FETCH cur_pacients INTO rec_pacient;
+        EXIT WHEN NOT FOUND;
+
+        RAISE NOTICE 'Pacient: DNI=%, Cognom=%, Naixement=%, Telèfon=%',
+            rec_pacient.dni, rec_pacient.cognom1, rec_pacient.data_naix, rec_pacient.telefon;
+
+        UPDATE persona
+        SET mail = LOWER(rec_pacient.cognom_metge) || '_' || rec_pacient.mail
+        WHERE dni = rec_pacient.dni;
+
+        contador := contador + 1;
+    END LOOP;
+
+    CLOSE cur_pacients;
+
+    IF contador = 0 THEN
+        RAISE EXCEPTION 'Error! El metge amb DNI % no té cap visita registrada', p_dni_metge;
+    END IF;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Codi de l''error: %, Missatge: %', SQLSTATE, SQLERRM;
+END;
+$$;
