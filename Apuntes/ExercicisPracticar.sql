@@ -422,3 +422,94 @@ EXCEPTION
 END;
 $$;
 
+Exercici 2
+CREATE TABLE ingressos_visites (
+    total NUMERIC(14,3)
+);
+
+INSERT INTO ingressos_visites (total) VALUES (0);
+
+
+CREATE OR REPLACE FUNCTION func_comprovar_data(data DATE)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF data <= CURRENT_DATE THEN
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE proc_act_ingressos()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total NUMERIC(14,3);
+BEGIN
+    SELECT COALESCE(SUM(preu), 0) INTO v_total FROM visita;
+
+    UPDATE ingressos_visites
+    SET total = v_total;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION func_act_ingressos()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total NUMERIC(14,3);
+BEGIN
+    UPDATE ingressos_visites
+    SET total = total + NEW.preu;
+
+    SELECT total INTO v_total FROM ingressos_visites;
+    RAISE NOTICE 'Els ingressos actuals per les visites són %', v_total;
+
+    RETURN NEW;
+END;
+$$;
+
+
+CREATE TRIGGER trig_act_ingressos
+AFTER INSERT ON visita
+FOR EACH ROW
+EXECUTE FUNCTION func_act_ingressos();
+
+
+CREATE OR REPLACE FUNCTION func_visit_audit()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        IF NOT func_comprovar_data(NEW.data_visita) THEN
+            RAISE EXCEPTION 'Data incorrecte';
+        END IF;
+
+    ELSIF TG_OP = 'UPDATE' THEN
+        IF NEW.preu <> OLD.preu THEN
+            RAISE EXCEPTION 'No es pot modificar el preu';
+        END IF;
+
+        IF NOT func_comprovar_data(NEW.data_visita) THEN
+            RAISE EXCEPTION 'Data incorrecte';
+        END IF;
+
+    ELSIF TG_OP = 'DELETE' THEN
+        RAISE EXCEPTION 'No es pot eliminar una visita';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+CREATE TRIGGER trig_visit_audit
+BEFORE INSERT OR UPDATE OR DELETE ON visita
+FOR EACH ROW
+EXECUTE FUNCTION func_visit_audit();
