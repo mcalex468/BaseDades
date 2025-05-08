@@ -237,3 +237,5 @@ SELECT *
 FROM empleats
 WHERE salari > ALL (SELECT salari FROM empleats WHERE id_departament = 'IT');
 ```
+
+cositas
